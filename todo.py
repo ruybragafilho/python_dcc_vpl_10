@@ -1,5 +1,6 @@
 import pandas as pd
 
+
 # Test 0
 def numRows(games):
     """The number of rows in the games table.
@@ -9,9 +10,9 @@ def numRows(games):
     games: DataFrame
         The table with results from Olympic Games, organized by country.
     """
+    
+    return games.index.size
 
-    # TODO
-    return 0
 
 # Test 1
 def numColumns(games):
@@ -23,8 +24,8 @@ def numColumns(games):
         The table with results from Olympic Games, organized by country.
     """
 
-    # TODO
-    return 0
+    return games.columns.size
+
 
 # Test 2
 def numGoldTotal(games):
@@ -40,8 +41,8 @@ def numGoldTotal(games):
         The table with results from Olympic Games, organized by country.
     """
 
-    # TODO
-    return 0
+    return games[ 'GoldT' ].sum()
+
 
 # Test 3
 def numSummerGoldCountry(games, country):
@@ -54,9 +55,10 @@ def numSummerGoldCountry(games, country):
     games: str
         The country that we are considering in this query.
     """
+   
+    countryLine = games[ (games['Country'] == country) ]
+    return countryLine.iloc[ 0 ][ 'GoldS' ]
 
-    # TODO
-    return 0
 
 # Test 4
 def getCodeMaxSummerGold(games):
@@ -71,9 +73,10 @@ def getCodeMaxSummerGold(games):
     games: DataFrame
         The table with results from Olympic Games, organized by country.
     """
+    
+    idCountryMax = games[ 'GoldS' ].idxmax()
+    return games.iloc[idCountryMax]['Code']
 
-    # TODO
-    return "ZZZ"
 
 # Test 5
 def getNthBestSummerCountry(games, n):
@@ -92,8 +95,11 @@ def getNthBestSummerCountry(games, n):
         The index that we want in the rank.
     """
 
-    # TODO
-    return "No Country"
+    tabelaOrdenada = games.sort_values( by=['GoldS', 'SilverS', 'BronzeS', 'Country'], \
+                                        ascending=[False, False, False, True] )
+    return tabelaOrdenada.iloc[n]['Country']
+
+
 # Test 6
 def numCountriesWithMoreThanNWinterMedals(games, n):
     """The number of countries that won strictly more than n medals of any kind.
@@ -110,8 +116,8 @@ def numCountriesWithMoreThanNWinterMedals(games, n):
         The number of medals that we consider as a threshold.
     """
 
-    # TODO
-    return 0
+    return games.apply( lambda x: x['TotalW'] > n, axis=1 ).sum()
+    
 
 # Test 7
 def numWinterCountries(games):
@@ -128,8 +134,9 @@ def numWinterCountries(games):
         The table with results from Olympic Games, organized by country.
     """
 
-    # TODO
-    return 0
+    media = games[ 'GoldW' ].mean()
+    return games.apply( lambda x: x['GoldW'] > media, axis=1 ).sum()
+
 
 # Test 8
 def countGoldsWithLetter(games, c):
@@ -148,8 +155,12 @@ def countGoldsWithLetter(games, c):
         considered.
     """
 
-    # TODO
-    return 0
+    def countGold( s ):
+        if s['Country'][0] == c.upper():
+            return s[ 'GoldS' ]
+
+    return int(games.apply( countGold, axis=1 ).sum())
+    
 
 # Test 9
 def countHybernalCountries(games):
@@ -166,5 +177,34 @@ def countHybernalCountries(games):
         The table with results from Olympic Games, organized by country.
     """
 
-    # TODO
-    return 0
+    hybernal = lambda x: x[ 'TotalW' ] >= x[ 'TotalS' ]
+    return games.apply( hybernal, axis=1 ).sum()
+
+
+# Careegando a tabela de jogos
+tabelaDeJogos = pd.read_csv( 'games.csv' )
+
+print( '\n\n' )
+
+print( 'Número de linhas: ', numRows(tabelaDeJogos) )
+
+print( 'Número de Colunas: ', numColumns(tabelaDeJogos) )
+
+print( 'Número total de medalhas de ouro: ', numGoldTotal(tabelaDeJogos) )
+
+print( 'Número de medalhas de ouro em jogos de verão do Brazil: ', numSummerGoldCountry(tabelaDeJogos, 'Brazil') )
+
+print( 'País com maior número de GoldS: ', getCodeMaxSummerGold(tabelaDeJogos) )
+
+print( 'Enésimo pais com no quadro de madalhas de verão: ', getNthBestSummerCountry(tabelaDeJogos, 20) )
+
+print( 'Número de países com mais do que n winter medalhas: ', numCountriesWithMoreThanNWinterMedals(tabelaDeJogos, 10) )
+
+print( 'countGoldsWithLetter a: ', countGoldsWithLetter(tabelaDeJogos, 'a') )
+print( 'countGoldsWithLetter d: ', countGoldsWithLetter(tabelaDeJogos, 'd') )
+
+print( 'Hybernal: ', countHybernalCountries(tabelaDeJogos) )
+
+
+
+print( '\n\n' )
